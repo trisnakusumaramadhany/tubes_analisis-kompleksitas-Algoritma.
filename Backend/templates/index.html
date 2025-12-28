@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Analisis Kompleksitas Algoritma</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            background: #ffffff;
+            width: 90%;
+            max-width: 800px;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 15px;
+        }
+
+        textarea, select {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #007bff, #0056d2);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,123,255,0.4);
+        }
+
+        .result {
+            margin-top: 30px;
+            background: #f6f8fb;
+            border-left: 6px solid #007bff;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result p {
+            margin: 8px 0;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Analisis Kompleksitas Algoritma</h1>
+    <div class="subtitle">
+        Perbandingan algoritma <b>iteratif</b> dan <b>rekursif</b> dalam menghitung
+        jumlah huruf kapital pada sebuah kalimat.
+    </div>
+
+    <textarea id="text">Ada seoRang anak Yang berNama Dhany</textarea>
+
+    <select id="size">
+        <option value="0">Gunakan input manual</option>
+        <option value="10">Generate 10 karakter</option>
+        <option value="100">Generate 100 karakter</option>
+        <option value="1000">Generate 1000 karakter</option>
+        <option value="5000">Generate 5000 karakter</option>
+        <option value="10000">Generate 10000 karakter</option>
+    </select>
+
+    <button onclick="analyze()">Jalankan Analisis</button>
+
+    <div class="result" id="result"></div>
+
+    <footer>
+        Tugas Besar Analisis Kompleksitas Algoritma
+    </footer>
+</div>
+
+<script>
+function analyze() {
+    fetch("/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            text: document.getElementById("text").value
+        })
+    })
+    .then(async res => {
+        const text = await res.text();
+        try {
+            return JSON.parse(text);
+        } catch {
+            throw new Error(text);
+        }
+    })
+    .then(data => {
+        document.getElementById("result").style.display = "block";
+        document.getElementById("result").innerHTML = `
+            <p>Jumlah Huruf Kapital <span class="highlight">(Iteratif)</span>: ${data.iteratif}</p>
+            <p>Jumlah Huruf Kapital <span class="highlight">(Rekursif)</span>: ${data.rekursif}</p>
+            <p>Waktu Eksekusi Iteratif: <span class="highlight">${data.time_iteratif} ms</span></p>
+            <p>Waktu Eksekusi Rekursif: <span class="highlight">${data.time_rekursif} ms</span></p>
+            <p>Kompleksitas Waktu: <span class="highlight">${data.complexity}</span></p>
+        `;
+    })
+    .catch(err => alert("Error: " + err.message));
+}
+</script>
+
+</body>
+</html>
